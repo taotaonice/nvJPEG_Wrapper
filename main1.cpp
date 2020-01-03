@@ -2,7 +2,7 @@
  * File Type:     C/C++
  * Author:        Hutao {hutaonice@gmail.com}
  * Creation:      星期二 13/08/2019 19:41.
- * Last Revision: 星期一 19/08/2019 23:37.
+ * Last Revision: 星期五 03/01/2020 10:01.
  */
 
 #include <iostream>
@@ -96,7 +96,7 @@ public:
 };
 int main()
 {
-    string img_path = "../720P.jpg";
+    string img_path = "../imgs/720P.jpg";
     NVJpegDecoder decoder;
     cv::Mat img;
     int test_times = 100;
