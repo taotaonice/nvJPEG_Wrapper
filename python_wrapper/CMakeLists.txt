@@ -20,5 +20,6 @@ link_directories(
 pybind11_add_module(libnvjpeg main.cpp)
 target_link_libraries(libnvjpeg
   nvjpeg
+  cudart
   ${OpenCV_LIBS}
   )

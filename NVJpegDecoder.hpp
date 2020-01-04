@@ -13,13 +13,17 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include "helper_nvJPEG.hxx"
+
+#define OPENCV
+#ifdef OPENCV
 #include <opencv2/opencv.hpp>
+#endif
 
 using std::string;
 using std::ifstream;
 using std::ios;
 class NVJpegDecoder{
-private:
+protected:
     nvjpegJpegState_t jpeg_state;
     nvjpegHandle_t handle;
     cudaStream_t stream;
@@ -73,6 +77,7 @@ public:
         checkCudaErrors(cudaStreamSynchronize(stream));
     }
 
+#ifdef OPENCV
     cv::Mat imread(string img_path){
         ifstream pic(img_path, ios::in|ios::binary|ios::ate);
         int size = pic.tellg();
@@ -89,6 +94,7 @@ public:
         Decode(ret.data, height, width, buf, size, true);
         return ret;
     }
+#endif
 
     ~NVJpegDecoder(){
         if(dest.channel[0]){

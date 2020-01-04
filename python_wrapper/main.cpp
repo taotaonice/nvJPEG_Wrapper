@@ -15,7 +15,32 @@ using std::cout;
 using std::endl;
 
 namespace py = pybind11;
+using namespace std;
 
+class py_NVJpegDecoder: public NVJpegDecoder {
+public:
+    py_NVJpegDecoder(){}
+    py::array_t<uchar> imread(std::string img_path){
+        ifstream pic(img_path, ios::in|ios::binary|ios::ate);
+        int size = pic.tellg();
+        pic.seekg(0, ios::beg);
+        if(size > capacity) {
+            if(buf) delete buf;
+            buf = new uchar[size];
+            capacity = size;
+        }
+        pic.read((char*)buf, size);
+        pic.close();
+        int height, width, channel;
+        GetImageInfo(height, width, channel, buf, size);
+        auto ret = py::array_t<uchar>({height, width, channel});
+        py::buffer_info info = ret.request();
+        uchar* ptr = (uchar*)info.ptr;
+        Decode(ptr, height, width, buf, size, true);
+        return ret;
+    }
+};
+/*
 py::array_t<double> add_arrays_1d(py::array_t<double>& input1, py::array_t<double>& input2) {
     py::buffer_info buf1 = input1.request();
     py::buffer_info buf2 = input2.request();
@@ -40,13 +65,14 @@ py::array_t<double> add_arrays_1d(py::array_t<double>& input1, py::array_t<doubl
     }
     return result;
 }
+*/
 
 PYBIND11_MODULE(libnvjpeg, m)
 {
     m.doc() = "nvJPEG python wrapper";
-    py::class_<NVJpegDecoder>(m, "NVJpegDecoder")
+    py::class_<py_NVJpegDecoder>(m, "py_NVJpegDecoder")
         .def(py::init<>())
-        .def("imread", &NVJpegDecoder::imread);
+        .def("imread", &py_NVJpegDecoder::imread);
 }
 
 
